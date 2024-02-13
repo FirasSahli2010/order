@@ -3,6 +3,9 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PasswordController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -14,9 +17,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::middleware('auth:sanctum')->post('/user', [LoginController::class, 'login']);
+Route::middleware('auth:sanctum')->get('/login', [LoginController::class, 'login']);
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::middleware('auth:sanctum')->('/changepassword', [PasswordController::class,  'update']);
+
+Route::post('/login', function (Request $request) {
+    $loginController = new LoginController();
+    return $loginController->login($request);
+})->name( 'login');
 
 Route::get('/', function () {
     echo 'first place';
@@ -24,8 +37,6 @@ Route::get('/', function () {
 });
 
 Route::post('/tokens/create', function (Request $request) {
-    var_dump($request->user());
-    exit();
     $token = $request->user()->createToken($request->token_name);
  
     return ['token' => $token->plainTextToken];
