@@ -42,4 +42,18 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function homeAddress()
+    {
+        return $this->hasOne(AddressDetails::class, 'home_address_id')->where('type', 'home');
+    }
+
+    public function billingAddress()
+    {
+       if ($this->billing_address_id) {
+            return $this->hasOne(AddressDetails::class, 'billing_address_id')->where('type', 'billing');
+        } else {
+            return $this->hasOne(AddressDetails::class, 'home_address_id')->where('type', 'home');
+        }
+    }
 }
