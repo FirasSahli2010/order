@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+use Illuminate\Validation\ValidationException;
+
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -45,15 +47,15 @@ class User extends Authenticatable
 
     public function homeAddress()
     {
-        return $this->hasOne(AddressDetails::class, 'home_address_id')->where('type', 'home');
+        return $this->hasMany(AddressDetails::class, 'user_id')->where('type', 'home');
     }
 
     public function billingAddress()
     {
        if ($this->billing_address_id) {
-            return $this->hasOne(AddressDetails::class, 'billing_address_id')->where('type', 'billing');
+            return $this->hasOne(AddressDetails::class, 'user_id')->where('type', 'billing');
         } else {
-            return $this->hasOne(AddressDetails::class, 'home_address_id')->where('type', 'home');
+            return $this->hasOne(AddressDetails::class, 'user_id')->latestOfMany();
         }
     }
 }
